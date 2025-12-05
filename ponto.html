@@ -1,83 +1,91 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Registro de Ponto</title>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Sistema de Ponto</title>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-    .container {
-        background: white;
-        padding: 40px;
-        width: 600px;
-        border-radius: 15px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-    input {
-        width: 80%;
-        padding: 15px;
-        font-size: 22px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    button {
-        width: 85%;
-        padding: 20px;
-        font-size: 26px;
-        border-radius: 10px;
-        border: none;
-        background: #28a745;
-        color: white;
-        cursor: pointer;
-    }
-    button:hover {
-        background: #218838;
-    }
-    #status {
-        margin-top: 25px;
-        font-size: 20px;
-        font-weight: bold;
-    }
-</style>
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+    <script>
+        // Inicialização da Public Key
+        document.addEventListener("DOMContentLoaded", function () {
+            emailjs.init("ApUyBFJDojPVeIoyc");
+        });
+
+        function registrarPonto() {
+
+            // Nome do funcionário (troque depois se quiser puxar de login)
+            const nome = "Funcionário";
+
+            // Horário atual
+            const horario = new Date().toLocaleString("pt-BR");
+
+            // Antes: Verificar localização
+            if (!navigator.geolocation) {
+                alert("Seu navegador não suporta geolocalização.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+
+                    const latitude = pos.coords.latitude.toFixed(6);
+                    const longitude = pos.coords.longitude.toFixed(6);
+
+                    // Enviar dados via EmailJS
+                    const dados = {
+                        nome: nome,
+                        horario: horario,
+                        latitude: latitude,
+                        longitude: longitude,
+                        email: "paineisksolucoesfinan@gmail.com"
+                    };
+
+                    emailjs.send("service_h66o8zu", "template_nvldzbr", dados)
+                        .then(function () {
+                            alert("Ponto registrado com sucesso!");
+                        })
+                        .catch(function (error) {
+                            alert("Erro ao enviar: " + JSON.stringify(error));
+                        });
+                },
+                function (error) {
+                    alert("Erro ao pegar localização. Ative o GPS ou permita o acesso.");
+                }
+            );
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d0d0d;
+            color: #fff;
+            text-align: center;
+            padding-top: 80px;
+        }
+        button {
+            background: #3a86ff;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 10px;
+            font-size: 22px;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
 
 </head>
 <body>
 
-<div class="container">
     <h1>Registro de Ponto</h1>
+    <p>Clique abaixo para registrar ponto com localização.</p>
 
-    <input type="text" id="nomeFuncionario" placeholder="Digite seu nome ou código">
+    <button onclick="registrarPonto()">Bater Ponto</button>
 
-    <button onclick="baterPonto()">Bater Ponto</button>
-
-    <div id="status"></div>
-</div>
-
-<script>
-    // Inicializa EmailJS
-    emailjs.init("ApUyBFJDojPVeIoyc"); // Sua PUBLIC KEY
-
-    function baterPonto() {
-
-        const nome = document.getElementById("nomeFuncionario").value.trim();
-        const statusDiv = document.getElementById("status");
-        statusDiv.style.color = "red";
-
-        if (nome === "") {
-            statusDiv.textContent = "Digite seu nome!";
-            return;
-        }
-
-        statusDiv.textContent = "Coletando locali
+</body>
+</html>
